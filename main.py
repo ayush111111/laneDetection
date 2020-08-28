@@ -3,7 +3,7 @@ import cv2 as cv
 import cv2 as cv
 import numpy as np
 
-video = '/home/ayushlokare/Downloads/lane_vgt.mp4'
+video = '/home/ayushlokare/Downloads/WhatsApp Video 2020-08-29 at 12.39.10 AM.mp4'
 cap = cv.VideoCapture(video)
 
 def blank(x):
@@ -22,10 +22,11 @@ def ROI(img, vertices):
 def drawLines(img, lines):
     img = np.copy(img)
     blank_image = np.zeros_like(img)
-    for line in lines:
-        for x1, y1, x2, y2 in line:
-            cv.line(blank_image, (x1, y1), (x2, y2), (255, 0, 0), thickness=3)
-    img = cv.addWeighted(img, 0.7, blank_image, 0.3, 0.0, )
+    if lines is not None :
+        for line in lines:
+            for x1, y1, x2, y2 in line:
+                cv.line(blank_image, (x1, y1), (x2, y2), (255, 0,0), thickness=5)
+    img = cv.addWeighted(img, 0.1, blank_image, 0.9, 0.0, )
     return img
 
 
@@ -40,7 +41,7 @@ def process(image):
     ]
     cropped_image = ROI(image,
                         np.array([region_of_interest_vertices], np.int32), )
-    lines = cv.HoughLinesP(cropped_image, 10, np.pi / 180, 50, np.array([]), 40, 100)
+    lines = cv.HoughLinesP(cropped_image, 1, np.pi / 180, 50, np.array([]), 25, 100)
 
     imageWithLines = drawLines(cropped_image, lines)
 
@@ -49,7 +50,7 @@ def process(image):
 
 cv.namedWindow('Minimum')
 cv.namedWindow('Maximum')
-cv.createTrackbar('lh', 'Minimum', 50, 360, blank)
+cv.createTrackbar('lh', 'Minimum', 49, 360, blank)
 cv.createTrackbar('ls', 'Minimum', 100, 255, blank)
 cv.createTrackbar('lv', 'Minimum', 100, 255, blank)
 
@@ -62,8 +63,6 @@ cv.createTrackbar('uv', 'Maximum', 255, 255, blank)
 while cap.isOpened():
     ret, frame = cap.read()
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-    lower_white = np.array([52, 15, 191])
-    upper_white = np.array([100, 91, 255])
 
     # mode 0 is for adjusting hsv values according to video
     mode = 0
@@ -87,6 +86,8 @@ while cap.isOpened():
         mask = cv.inRange(hsv, l_b, u_b)
 
     else:
+        lower_white = np.array([52, 15, 191])
+        upper_white = np.array([100, 91, 255])
         mask = cv.inRange(hsv, lower_white, upper_white)
 
     res = cv.bitwise_and(frame, frame, mask=mask)
