@@ -50,7 +50,7 @@ def process(image):
 cv.namedWindow('Minimum')
 cv.namedWindow('Maximum')
 cv.createTrackbar('lh', 'Minimum', 50, 360, blank)
-cv.createTrackbar('ls', 'Minimum', 53, 255, blank)
+cv.createTrackbar('ls', 'Minimum', 100, 255, blank)
 cv.createTrackbar('lv', 'Minimum', 100, 255, blank)
 
 cv.createTrackbar('uh', 'Maximum', 140, 360, blank)
