@@ -3,7 +3,7 @@ import cv2 as cv
 import cv2 as cv
 import numpy as np
 
-video = '/home/ayushlokare/Downloads/WhatsApp Video 2020-08-29 at 12.39.10 AM.mp4'
+video = '/home/ayushlokare/Downloads/lane_vgt.mp4'
 cap = cv.VideoCapture(video)
 
 def blank(x):
@@ -26,7 +26,7 @@ def drawLines(img, lines):
         for line in lines:
             for x1, y1, x2, y2 in line:
                 cv.line(blank_image, (x1, y1), (x2, y2), (255, 0,0), thickness=5)
-    img = cv.addWeighted(img, 0.1, blank_image, 0.9, 0.0, )
+    img = cv.addWeighted(img, 1.0, blank_image, 1.0, 0.0, )
     return img
 
 
