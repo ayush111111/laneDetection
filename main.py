@@ -6,7 +6,7 @@ import numpy as np
 video = '/home/ayushlokare/Downloads/lane_vgt.mp4'
 cap = cv.VideoCapture(video)
 
-def Nothing(x):
+def blank(x):
     pass
 
 
@@ -15,8 +15,8 @@ def ROI(img, vertices):
     # channel_count = img.shape[2]
     match_mask_color = 255
     cv.fillPoly(mask, vertices, match_mask_color)
-    masked_image = cv.bitwise_and(img, mask)
-    return masked_image
+    maskedImage = cv.bitwise_and(img, mask)
+    return maskedImage
 
 
 def drawLines(img, lines):
@@ -42,26 +42,28 @@ def process(image):
                         np.array([region_of_interest_vertices], np.int32), )
     lines = cv.HoughLinesP(cropped_image, 10, np.pi / 180, 50, np.array([]), 40, 100)
 
-    image_with_lines = drawLines(cropped_image, lines)
+    imageWithLines = drawLines(cropped_image, lines)
 
-    return image_with_lines
+    return imageWithLines
 
 
 cv.namedWindow('Minimum')
 cv.namedWindow('Maximum')
-cv.createTrackbar('lh', 'Minimum', 50, 360, Nothing)
-cv.createTrackbar('ls', 'Minimum', 53, 255, Nothing)
-cv.createTrackbar('lv', 'Minimum', 100, 255, Nothing)
+cv.createTrackbar('lh', 'Minimum', 50, 360, blank)
+cv.createTrackbar('ls', 'Minimum', 53, 255, blank)
+cv.createTrackbar('lv', 'Minimum', 100, 255, blank)
 
-cv.createTrackbar('uh', 'Maximum', 140, 360, Nothing)
-cv.createTrackbar('us', 'Maximum', 160, 255, Nothing)
-cv.createTrackbar('uv', 'Maximum', 255, 255, Nothing)
+cv.createTrackbar('uh', 'Maximum', 140, 360, blank)
+cv.createTrackbar('us', 'Maximum', 160, 255, blank)
+cv.createTrackbar('uv', 'Maximum', 255, 255, blank)
 
 
 
 while cap.isOpened():
     ret, frame = cap.read()
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    lower_white = np.array([52, 15, 191])
+    upper_white = np.array([100, 91, 255])
 
     # mode 0 is for adjusting hsv values according to video
     mode = 0
@@ -70,9 +72,6 @@ while cap.isOpened():
     if mode == 0:
 
         sensitivity = 15
-
-        lower_white = np.array([52, 15, 191])
-        upper_white = np.array([100, 91, 255])
 
         l_h = cv.getTrackbarPos('lh', 'Minimum')
         l_s = cv.getTrackbarPos('ls', 'Minimum')
@@ -86,15 +85,15 @@ while cap.isOpened():
         u_b = np.array([u_h, u_s, u_v])
 
         mask = cv.inRange(hsv, l_b, u_b)
+
     else:
-        lower_white = np.array([52, 15, 191])
-        upper_white = np.array([100, 91, 255])
         mask = cv.inRange(hsv, lower_white, upper_white)
 
     res = cv.bitwise_and(frame, frame, mask=mask)
     edges = cv.Canny(res, 10, 50)
     median = cv.medianBlur(res, 25)
     final = process(edges)
+
     cv.imshow('final', final)
     if cv.waitKey(1) & 0xff == ord('q'):
         break
